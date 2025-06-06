@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload Resume File</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    input[type="file"] {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #2b7a78;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #205e5d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Upload Resume</h1>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label for="{{ form.resume.id_for_label }}">Select Resume</label>
+      {{ form.resume }}
+      <button type="submit">Upload</button>
+    </form>
+  </div>
+</body>
+</html>

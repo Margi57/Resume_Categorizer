@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Uploaded Resumes</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    li {
+      background: #fff;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #444;
+    }
+
+    .file-name {
+      font-weight: bold;
+      color: #2b7a78;
+      text-decoration: none;
+    }
+
+    .file-name:hover {
+      text-decoration: underline;
+    }
+
+    .role {
+      font-style: italic;
+      color: #17252a;
+    }
+
+    .timestamp {
+      font-size: 0.85em;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>Uploaded Resumes</h1>
+  <ul>
+    {% for resume in resumes %}
+      <li>
+        <a href="{{ MEDIA_URL }}{{ resume.file_name }}" download>{{ resume.file_name }}</a>
+        <span class="role">{{ resume.predicted_role }}</span>
+        <span class="timestamp">{{ resume.uploaded_at|date:"Y-m-d H:i" }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
