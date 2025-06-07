@@ -1,9 +1,9 @@
 import os
 import PyPDF2
 import docx
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-import pickle
+import re
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 
 def extract_text_from_file(file_path):
     ext = os.path.splitext(file_path)[1].lower()
@@ -19,16 +19,14 @@ def extract_text_from_file(file_path):
             text += para.text + '\n'
     return text.lower()
 
-def classify_resume(text):
-    roles = {
-        'Frontend Developer': ['html', 'css', 'javascript', 'react', 'angular'],
-        'Backend Developer': ['java', 'spring', 'django', 'flask', 'node.js'],
-        'Data Scientist': ['machine learning', 'pandas', 'numpy', 'data analysis', 'tensorflow'],
-        'DevOps Engineer': ['docker', 'kubernetes', 'aws', 'jenkins', 'ci/cd'],
-        'UI/UX Designer': ['figma', 'adobe xd', 'wireframe', 'prototyping']
-    }
-    for role, keywords in roles.items():
-        for keyword in keywords:
-            if keyword in text:
-                return role
-    return 'Other'
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-zA-Z\s]', ' ', text)  # remove punctuation/numbers
+    text = re.sub(r'\s+', ' ', text)          # remove extra spaces
+    stop_words = set(stopwords.words('english'))
+    lemmatizer = WordNetLemmatizer()
+    text = ' '.join(
+        [lemmatizer.lemmatize(word) for word in text.split() if word not in stop_words]
+    )
+    return text

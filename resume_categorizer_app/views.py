@@ -5,7 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from .models import ResumeUpload
 from .forms import ResumeUploadForm
-from .utils import extract_text_from_file, classify_resume
+from .utils import extract_text_from_file
 from .role_detectore import predict_role
 
 def upload_resume(request):
@@ -19,19 +19,16 @@ def upload_resume(request):
 
             # Extract text
             text = extract_text_from_file(file_path)
-            print("text====>",text)
-            # Classify role
-            role = predict_role(text)
-            print(role)
-
-            # Save to DB
+            # Predict role 
+            predicted_role, confidence_score = predict_role(text)
+            
             resume = ResumeUpload(
                 file=file,
                 file_name=filename,
                 extracted_text=text,
-                predicted_role=role[0],
+                predicted_role=predicted_role,
                 uploaded_at=datetime.datetime.now(),
-                confidance_score = 1
+                confidance_score = confidence_score
             )
             resume.save()
             return redirect('list_resumes')
@@ -41,8 +38,13 @@ def upload_resume(request):
 
 
 def list_resumes(request):
-    resumes = ResumeUpload.objects.all().order_by('-uploaded_at')
+    query = request.GET.get('query')
+    if query:
+        resumes = ResumeUpload.objects.filter(predicted_role__icontains=query).order_by('-uploaded_at')
+    else:
+        resumes = ResumeUpload.objects.all().order_by('-uploaded_at')
     return render(request, 'resume_list.html', {
         'resumes': resumes,
-        'MEDIA_URL': settings.MEDIA_URL
+        'MEDIA_URL': settings.MEDIA_URL,
+        'query': query or ''
     })

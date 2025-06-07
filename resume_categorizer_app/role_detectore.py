@@ -1,8 +1,13 @@
+import pickle
+import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-import pickle
+from .utils import clean_text
 
-# Sample resumes and their labels
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+# Sample training data
 texts = [
     "Python, Java, C++, Django, Flask, Node.js, Express.js, API, REST, PostgreSQL, MySQL, MongoDB, Redis, GraphQL,Celery, RabbitMQ, Kafka, SQL, ORM, authentication, authorization, server-side, unit testing,Docker, microservices, scalability, security",
     "HTML, CSS, JavaScript, React, Redux, Angular, Vue.js, Bootstrap, Tailwind, jQuery, UI/UX,TypeScript, responsive design, Figma, Adobe XD, REST APIs, Webpack, Babel, npm, AJAX, DOM,Cross-browser compatibility, CSS3 animations, frontend testing, Jest, Vite, Next.js",
@@ -14,23 +19,35 @@ texts = [
     "manual testing, automation testing, Selenium, JUnit, TestNG, regression testing, bug tracking,JIRA, SDLC, STLC, test cases, test plans, unit testing, integration testing, functional testing,black box, white box, performance testing, load testing, UAT, defect logging, scripts, test suites,Postman, REST API testing",
     "Android, Java, Kotlin, XML, Android Studio, Firebase, REST API, SQLite, Room, MVVM, Jetpack,RecyclerView, Retrofit, LiveData, Coroutines, Push notifications, background services, Gradle,Material Design, debugging, unit tests, Google Play Store, app performance, UI testing",
     "HTML, CSS, JavaScript, React, Node.js, Express.js, MongoDB, MySQL, PostgreSQL, Python, Django,REST API, GraphQL, Git, Docker, AWS, authentication, JWT, frontend, backend, CI/CD, MVC,testing, deployment, security, scalability, API integration, full stack"
-    
-    
 ]
-labels = ["Backend Developer", "Frontend Developer", "DevOps Engineer","Data Scientist","UI/UX Developer","WordPress Developer","Business Development (BD) Executive","QA / Software Tester","Android Developer","Full Stack Developer"]
+labels = [
+    "Backend Developer", "Frontend Developer", "DevOps Engineer",
+    "Data Scientist", "UI/UX Developer", "WordPress Developer",
+    "Business Development (BD) Executive", "QA / Software Tester",
+    "Android Developer", "Full Stack Developer"
+]
 
-# Convert text to TF-IDF
+# Clean the training texts
+cleaned_texts = [clean_text(text) for text in texts]
+
+# Vectorize the cleaned data
 vectorizer = TfidfVectorizer()
-X = vectorizer.fit_transform(texts)
+X = vectorizer.fit_transform(cleaned_texts)
 
-# Train model
-model = LogisticRegression()
+# Train the model
+model = LogisticRegression(max_iter=1000)
 model.fit(X, labels)
 
-# Save model
+# Save the model and vectorizer
 with open("model.pkl", "wb") as f:
     pickle.dump((vectorizer, model), f)
-    
+
+# Role prediction 
 def predict_role(text):
-    vec = vectorizer.transform([text])
-    return model.predict(vec) 
+    cleaned = clean_text(text)
+    vec = vectorizer.transform([cleaned])
+    predicted_role = model.predict(vec)[0]
+    probabilities = model.predict_proba(vec)[0]
+    predicted_index = model.classes_.tolist().index(predicted_role)
+    confidence_score = probabilities[predicted_index]
+    return predicted_role, confidence_score

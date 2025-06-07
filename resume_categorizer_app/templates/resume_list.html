@@ -16,29 +16,59 @@
       margin-bottom: 30px;
     }
 
+    form.search-bar {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .search-input {
+      padding: 10px;
+      width: 250px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .search-button {
+      padding: 10px 15px;
+      background-color: #2b7a78;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-left: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .search-button:hover {
+      background-color: #205e5e;
+    }
+
     ul {
       list-style: none;
       padding: 0;
-      max-width: 700px;
+      max-width: 750px;
       margin: auto;
     }
 
     li {
-      background: #fff;
+      background: #ffffff;
       padding: 15px 20px;
       margin-bottom: 15px;
       border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #444;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .file-name {
       font-weight: bold;
       color: #2b7a78;
       text-decoration: none;
+      flex: 2;
     }
 
     .file-name:hover {
@@ -48,22 +78,44 @@
     .role {
       font-style: italic;
       color: #17252a;
+      flex: 1;
+      text-align: center;
     }
 
     .timestamp {
       font-size: 0.85em;
       color: #888;
+      flex: 1;
+      text-align: right;
     }
-  </style>
+
+    .confidence-score {
+      font-size: 0.85em;
+      color: #444;
+      background-color: #def2f1;
+      padding: 4px 8px;
+      border-radius: 5px;
+      margin-left: auto;
+    }
+</style>
+
 </head>
 <body>
   <h1>Uploaded Resumes</h1>
+
+  <form method="get" class="search-bar">
+    <input type="text" name="query" placeholder="Search by role..." value="{{ query }}" class="search-input">
+    <button type="submit" class="search-button">Search</button>
+  </form>
+
   <ul>
     {% for resume in resumes %}
       <li>
-        <a href="{{ MEDIA_URL }}{{ resume.file_name }}" download>{{ resume.file_name }}</a>
+        <a class="file-name" href="{{ MEDIA_URL }}{{ resume.file_name }}" download>{{ resume.file_name }}</a>
         <span class="role">{{ resume.predicted_role }}</span>
         <span class="timestamp">{{ resume.uploaded_at|date:"Y-m-d H:i" }}</span>
+        <span class="confidence-score">Confidence: {{ resume.confidance_score|floatformat:2 }}</span>
+
       </li>
     {% endfor %}
   </ul>
